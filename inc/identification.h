@@ -6,9 +6,17 @@
 
 namespace DT {
 
-    class Identificator;                        // main class of identification -> we need instance of this class for identification
-    class IdentificationMethod;                 // 
-    class LeastSquareMethod;
+    // main class of identification -> we need instance of this class for identification
+    class Identificator;  
+
+    // base class for identification method, which is created in main class and it's this 
+    // class which is providing identification (throught it's implementation in child classes)
+    class IdentificationMethod;    
+
+    // child classes, which are implementing specific algorithm of identification
+    class LeastSquareMethod;       
+
+    // enum just for method types distinguishing 
     enum IdentificationMethodType { LSM = 0 };
 
     // ----------------------------------- //
@@ -49,7 +57,7 @@ namespace DT {
         std::vector<Eigen::Vector4d> H;
 
     public:
-        Identificator(IdentificationMethodType type, int nominator_order, int denominator_order);
+        Identificator(IdentificationMethodType type, uint8_t nominator_order, uint8_t denominator_order);
         ~Identificator();
 
         // method for updating coeficients of identification

@@ -2,19 +2,17 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <cassert>
 
 namespace DT {
 
     const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
 
-    // --------------------------------------------------- //
-    //  IDENTIFICATION METHOD BASE CLASS  IMPLEMENTATIONS  //
-    // --------------------------------------------------- //
+    // -------------------------------------------------- //
+    //  IDENTIFICATION METHOD BASE CLASS IMPLEMENTATIONS  //
+    // -------------------------------------------------- //
 
     IdentificationMethod::IdentificationMethod(uint8_t n_params)
     {
-        // assert n_parameters < pow(2, 8) - 1;
         n_parameters = n_params;
         thetas = Eigen::VectorXd::Zero(n_parameters);
     }
@@ -27,7 +25,7 @@ namespace DT {
     //  MAIN IDENTIFICATION CLASS IMPLEMENTATIONS  //
     // ------------------------------------------- //
 
-    Identificator::Identificator(IdentificationMethodType type, int nominator_order, int denominator_order)
+    Identificator::Identificator(IdentificationMethodType type, uint8_t nominator_order, uint8_t denominator_order)
     : n_a(denominator_order), n_b(nominator_order)
     {
         std::cout << "Initializing identification main class!" << std::endl;
@@ -67,9 +65,9 @@ namespace DT {
         h[n_b] = -y;
     }
 
-    // ----------------------------------- //
-    //  IDENTIFICATION METHODS CLASSES     //
-    // ----------------------------------- //
+    // ---------------------------------- //
+    //   IDENTIFICATION METHODS CLASSES   //
+    // ---------------------------------- //
 
     // LEAST SQUARE METHOD
     LeastSquareMethod::LeastSquareMethod(uint8_t n_params) : IdentificationMethod(n_params)
