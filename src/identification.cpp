@@ -57,11 +57,11 @@ namespace DT {
         H.push_back(h);
 
         // update vector h with inputs of system
-        for (size_t i = 0; i < n_b - 1; i++) h[i+1] = h[i]; 
+        for (size_t i = n_b - 1; i >= 1; i--) h[i] = h[i-1]; 
         h[0] = u;
 
         // update vector h with outputs of system
-        for (size_t i = n_b; i < n_b + n_a - 1; i++)  h[i+1] = h[i]; 
+        for (size_t i = n_a + n_b - 1; i >= n_b + 1; i--)  h[i] = h[i-1]; 
         h[n_b] = -y;
     }
 
