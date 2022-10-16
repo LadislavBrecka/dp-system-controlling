@@ -1,5 +1,6 @@
 #include "../inc/transfer_fcn.h"
 #include <iostream>
+#include <cmath>
 
 namespace DT {
 
@@ -62,7 +63,40 @@ namespace DT {
     
     void TransferFunction::print()
     {
-        std::cout << "Not implemented yet!" << std::endl;
+        // nominator printing
+        for (int i = 0; i < n_b; i++)
+        {
+            if (B[i] != 0.0)
+            {
+                std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
+                std::cout << fabs(B[i]) << z_index;
+                if (i != n_b - 1)
+                    if (B[i] > 0.0) std::cout << " + "; else std::cout << " - ";
+            }
+        }
+
+        // dividing line printing
+        std::cout << std::endl;
+        for (int i = 0; i < std::max(n_a, n_b) * 8; i++)
+        {
+            std::cout << "-";
+        }
+        std::cout << std::endl;
+
+        // denominator printing
+        for (int i = 0; i < n_a; i++)
+        {
+            if (A[i] != 0.0)
+            {
+                std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
+                std::cout << fabs(A[i]) << z_index;
+                if (i != n_a - 1)
+                    if (A[i] > 0.0) std::cout << " + "; else std::cout << " - ";
+            }
+        }
+
+        // new line at the end
+        std::cout << std::endl;
     }
     
     void TransferFunction::shiftU(double u)

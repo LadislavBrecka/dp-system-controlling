@@ -12,6 +12,8 @@ int main(int argc, char const *argv[])
     Eigen::Vector3d B {{ 0, 0.006, 0.004 }};
     DT::TransferFunction tf(B, A);
 
+    tf.print();
+
     Eigen::VectorXd u { {  1.0,  0.0,   -5.5,     1.5,      3.3,     10.0,   -1.0,     1.1,     2.5,   -4.8   } };
 
     for (int i = 0; i < u.size(); i++)
