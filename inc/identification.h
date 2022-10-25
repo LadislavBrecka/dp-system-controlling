@@ -59,11 +59,11 @@ namespace DT {
     {
 
     protected:
-        uint8_t n_parameters;
+        uint n_parameters;
         Eigen::VectorXd thetas;
 
     public:
-        IdentificationMethod(uint8_t n_params);
+        IdentificationMethod(uint n_params);
         ~IdentificationMethod();
 
         // each child class (each specific method must implement own update methods)
@@ -84,13 +84,13 @@ namespace DT {
         // we can choose, which method we want to use
         std::unique_ptr<IdentificationMethod> method;
 
-        uint8_t n_a; uint8_t n_b;
+        uint n_a; uint n_b;
 
         Eigen::VectorXd h;
         std::vector<Eigen::Vector4d> H;
 
     public:
-        Identificator(IdentificationMethodType type, uint8_t nominator_order, uint8_t denominator_order);
+        Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order);
         ~Identificator();
 
         // method for updating coeficients of identification
@@ -123,7 +123,7 @@ namespace DT {
         double Q;
 
     public:
-        LeastSquareMethod(uint8_t n_params);
+        LeastSquareMethod(uint n_params);
         ~LeastSquareMethod();
 
         void update(Eigen::VectorXd h, double y) override;

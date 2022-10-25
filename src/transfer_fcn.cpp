@@ -12,8 +12,8 @@ namespace DT {
         A = denominator;
         B = nominator;
 
-        vU = Eigen::VectorXd::Zero(n_b);
-        vY = Eigen::VectorXd::Zero(n_a);
+        vU = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_b));
+        vY = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_a));
     }
     
     TransferFunction::TransferFunction(std::vector<double> nominator, std::vector<double> denominator)
@@ -24,8 +24,8 @@ namespace DT {
         A = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(denominator.data(), n_a);
         B = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(nominator.data(), n_b);
 
-        vU = Eigen::VectorXd::Zero(n_b);
-        vY = Eigen::VectorXd::Zero(n_a);
+        vU = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_b));
+        vY = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_a));
     }
     
     TransferFunction::~TransferFunction()
@@ -35,19 +35,20 @@ namespace DT {
     double TransferFunction::step(double u)
     {
         // shift vector u so it contains the newest input sample
-        shiftU(u);
+        vU->add(u);
 
         // input part
         double input_part = 0;
-        for (size_t i = 0; i < n_b; i++)
+        for (uint i = 0; i < n_b; i++)
         {
-            input_part += B[i] * vU[i];
+            // input_part += B[i] * vU->operator[](i);
+            input_part += B[i] * vU->at(i);
         }
 
         double output_part = 0;
-        for (size_t i = 1; i < n_a; i++)
+        for (uint i = 1; i < n_a; i++)
         {
-            output_part += A[i] * vY[i-1];
+            output_part += A[i] * vY->at(i-1);
         }
 
         double sum = input_part + output_part;
@@ -57,61 +58,50 @@ namespace DT {
         }
         
         // shift vector y so it containts the newest output sample
-        shiftY(y);
+        vY->add(y);
         return y;
     }
     
     void TransferFunction::print()
     {
         // nominator printing
-        for (int i = 0; i < n_b; i++)
+        for (uint i = 0; i < n_b; i++)
         {
             if (B[i] != 0.0)
             {
                 std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
                 std::cout << fabs(B[i]) << z_index;
                 if (i != n_b - 1)
+                {
                     if (B[i] > 0.0) std::cout << " + "; else std::cout << " - ";
+                }    
             }
         }
 
         // dividing line printing
         std::cout << std::endl;
-        for (int i = 0; i < std::max(n_a, n_b) * 8; i++)
+        for (uint i = 0; i < std::max(n_a, n_b) * 8; i++)
         {
             std::cout << "-";
         }
         std::cout << std::endl;
 
         // denominator printing
-        for (int i = 0; i < n_a; i++)
+        for (uint i = 0; i < n_a; i++)
         {
             if (A[i] != 0.0)
             {
                 std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
                 std::cout << fabs(A[i]) << z_index;
                 if (i != n_a - 1)
+                {
                     if (A[i] > 0.0) std::cout << " + "; else std::cout << " - ";
+                }
             }
         }
 
         // new line at the end
         std::cout << std::endl;
     }
-    
-    void TransferFunction::shiftU(double u)
-    {
-        // update vector u with inputs of system
-        for (size_t i = n_b-1; i >= 1; i--) vU[i] = vU[i-1]; 
-        vU[0] = u;
-    }
-    
-    void TransferFunction::shiftY(double y)
-    {
-         // update vector u with inputs of system
-        for (size_t i = n_a-1; i >= 1; i--) vY[i] = vY[i-1]; 
-        vY[0] = y;
-    }
-
 
 }

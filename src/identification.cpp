@@ -11,7 +11,7 @@ namespace DT {
     //  IDENTIFICATION METHOD BASE CLASS IMPLEMENTATIONS  //
     // -------------------------------------------------- //
 
-    IdentificationMethod::IdentificationMethod(uint8_t n_params)
+    IdentificationMethod::IdentificationMethod(uint n_params)
     {
         n_parameters = n_params;
         thetas = Eigen::VectorXd::Zero(n_parameters);
@@ -25,7 +25,7 @@ namespace DT {
     //  MAIN IDENTIFICATION CLASS IMPLEMENTATIONS  //
     // ------------------------------------------- //
 
-    Identificator::Identificator(IdentificationMethodType type, uint8_t nominator_order, uint8_t denominator_order)
+    Identificator::Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order)
     : n_a(denominator_order), n_b(nominator_order)
     {
         std::cout << "Initializing identification main class!" << std::endl;
@@ -70,7 +70,7 @@ namespace DT {
     // ---------------------------------- //
 
     // LEAST SQUARE METHOD
-    LeastSquareMethod::LeastSquareMethod(uint8_t n_params) : IdentificationMethod(n_params)
+    LeastSquareMethod::LeastSquareMethod(uint n_params) : IdentificationMethod(n_params)
     {
         // P matrix initialization with 10^10
         P = Eigen::MatrixXd::Zero(n_parameters, n_parameters);
