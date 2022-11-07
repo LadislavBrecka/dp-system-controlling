@@ -66,12 +66,9 @@ namespace DT {
         {
             if (B[i] != 0.0)
             {
+                if (B[i] > 0.0) std::cout << " + "; else std::cout << " - ";
                 std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
                 std::cout << fabs(B[i]) << z_index;
-                if (i != n_b - 1)
-                {
-                    if (B[i] > 0.0) std::cout << " + "; else std::cout << " - ";
-                }    
             }
         }
 
@@ -88,12 +85,9 @@ namespace DT {
         {
             if (A[i] != 0.0)
             {
+                if (A[i] > 0.0) std::cout << " + "; else std::cout << " - ";
                 std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
                 std::cout << fabs(A[i]) << z_index;
-                if (i != n_a - 1)
-                {
-                    if (A[i] > 0.0) std::cout << " + "; else std::cout << " - ";
-                }
             }
         }
 
