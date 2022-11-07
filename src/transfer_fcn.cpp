@@ -41,7 +41,6 @@ namespace DT {
         double input_part = 0;
         for (uint i = 0; i < n_b; i++)
         {
-            // input_part += B[i] * vU->operator[](i);
             input_part += B[i] * vU->at(i);
         }
 
@@ -51,12 +50,10 @@ namespace DT {
             output_part += A[i] * vY->at(i-1);
         }
 
-        double sum = input_part + output_part;
         double y = 0.0;
-        if (sum != 0.0) {
+        if (A[0] != 0.0)
             y = (1 / A[0]) * (input_part - output_part);
-        }
-        
+          
         // shift vector y so it containts the newest output sample
         vY->add(y);
         return y;
