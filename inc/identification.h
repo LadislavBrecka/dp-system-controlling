@@ -32,8 +32,6 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-Compile command: g++ main.cpp src/identification.cpp
-
 */
 
 
