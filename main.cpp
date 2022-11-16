@@ -1,6 +1,7 @@
 #include "inc/identification.h"
 #include "inc/transfer_fcn.h"
 #include "inc/closed_loop.h"
+#include "inc/pole_placement.h"
 #include <iostream>
 #include <iterator>
 #include <fstream>
@@ -20,8 +21,11 @@ int main(int argc, char const *argv[])
     Eigen::Vector3d B {{ 0.0024, 0.0048, 0.0024 }};
     DT::TransferFunction tf(B, A);
 
+    // there will be poleplacement method
+    DT::RegCoefs coefs = DT::evaluateDiscretePID(2, 0.7, 1, tf);
+
     DT::Regulator reg;
-    reg.initDiscretePidRegulator(10, 0.1, 0.7, 0.8, 0.7);
+    reg.initDiscretePidRegulator(10, 0.1, coefs.P, coefs.I, coefs.D);
 
     DT::ClosedLoopSystem cls(&reg, &tf);
 
