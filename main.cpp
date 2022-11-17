@@ -22,19 +22,19 @@ int main(int argc, char const *argv[])
     DT::TransferFunction tf(B, A);
 
     // there will be poleplacement method
-    DT::RegCoefs coefs = DT::evaluateDiscretePID(2, 0.7, 1, tf);
+    DT::RegCoefs coefs = DT::PolePlacement::evaluatePIDGains(tf, 2, 0.7, 2.0);
 
     DT::Regulator reg;
     reg.initDiscretePidRegulator(10, 0.1, coefs.P, coefs.I, coefs.D);
 
     DT::ClosedLoopSystem cls(&reg, &tf);
 
-    for (int i=0; i<500; i++)
-    {
-        double w = in[i];
-        DT::ClosedLoopStepResponse out = cls.step(w);
-        std::cout << out.y << std::endl;
-    }
+    // for (int i=0; i<500; i++)
+    // {
+    //     double w = in[i];
+    //     DT::ClosedLoopStepResponse out = cls.step(w);
+    //     std::cout << out.y << std::endl;
+    // }
 
     return 0;
 }

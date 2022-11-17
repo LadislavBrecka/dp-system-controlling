@@ -1,5 +1,8 @@
 #pragma once
 
+#include "./Eigen/Dense"
+#include <iostream>
+
 namespace DT
 {
     /*
@@ -13,39 +16,30 @@ namespace DT
         double I;
         double D;
     };
-    
-    RegCoefs evaluatePSD(double omega, double b, double k, const DT::TransferFunction& tf)
-    {
-        // check conditions, if system of linear equations has a solutions
-        bool condition = true;
 
-        // if yes, make computations and return coeficients
-        if (condition)  
-        {
-            return { 1.0, 0.0, 0.0 };
-        }
-        // if no, throw exception
-        else
-        {
-            throw std::domain_error("Regulator coeficients cannot be found by this method!");
-        }
-    }
-
-    RegCoefs evaluateDiscretePID(double omega, double b, double k, const DT::TransferFunction& tf)
+    namespace PolePlacement
     {
-        // check conditions, if system of linear equations has a solutions
-        bool condition = true;
-        
-        // if yes, make computations and return coeficients
-        if (condition)
+        /*
+        Works only for PID regulator with system of second order
+        */
+        RegCoefs evaluatePIDGains(const DT::TransferFunction& tf, double omega, double b, double k=0)
         {
-            return { 0.7, 0.8, 0.7 };
-        }   
-        // if no, throw exception
-        else
-        {
-            throw std::domain_error("Regulator coeficients cannot be found by this method!");
-        }
-    }              
-    
+            const Eigen::VectorXd A = tf.getDenominator();
+            const Eigen::VectorXd B = tf.getNominator();
+            const uint tf_order = A.size() - 1;
+
+            // int P = 
+            
+            // if yes, make computations and return coeficients
+            if (true)
+            {
+                return { 0.7, 0.8, 0.7 };
+            }   
+            // if no, throw exception
+            else
+            {
+                throw std::domain_error("Regulator coeficients cannot be found by this method!");
+            }
+        } 
+    } 
 }
