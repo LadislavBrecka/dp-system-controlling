@@ -12,29 +12,36 @@ const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
 
 int main(int argc, char const *argv[])
 {
-    std::ifstream is("input_signal.txt");
-    std::istream_iterator<double> start(is), end;
-    std::vector<double> in(start, end);
-    std::cout << "Read " << in.size() << " numbers" << std::endl;
+    double T_step = 0.1;
 
-    Eigen::Vector3d A {{ 1.0, -1.8955, 0.9050 }};
-    Eigen::Vector3d B {{ 0.0024, 0.0048, 0.0024 }};
-    DT::TransferFunction tf(B, A);
+    // input
+    Eigen::VectorXd in = Eigen::VectorXd::Ones(500);
 
-    // there will be poleplacement method
-    DT::RegCoefs coefs = DT::PolePlacement::evaluatePIDGains(tf, 2, 0.7, 2.0);
+    // DC motor discrete fcn
+    Eigen::VectorXd A {{ 1.0, -0.9802 }};
+    Eigen::VectorXd B {{ 0.0594 }};
+    DT::TransferFunction discrete_dc_model(B, A);
 
-    DT::Regulator reg;
-    reg.initDiscretePidRegulator(10, 0.1, coefs.P, coefs.I, coefs.D);
+    Eigen::VectorXd cA {{ 5, 1 }};
+    Eigen::VectorXd cB {{ 3 }};
+    DT::TransferFunction continuous_dc_model(cB, cA);
 
-    DT::ClosedLoopSystem cls(&reg, &tf);
+    // make pole-placement
+    auto PIV = DT::PolePlacement::PIV(continuous_dc_model, 2.0, 0.7, 1.0);  // omega = 2.0, b = 0.7, k = 1.0
 
-    // for (int i=0; i<500; i++)
-    // {
-    //     double w = in[i];
-    //     DT::ClosedLoopStepResponse out = cls.step(w);
-    //     std::cout << out.y << std::endl;
-    // }
+    // make PIV closed loop system
+    DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step);
+
+    std::cout << "Found PIV params: P: " << PIV.P << ", I: " << PIV.I << ", V: " << PIV.V << std::endl;
+
+    // P+IV regulator
+    for (int i=0; i<499; i++)
+    {
+        double w = in[i];
+        // double y = discrete_dc_model.step(w);
+        DT::ClosedLoopStepResponse res = cls_piv.step(w);
+        std::cout << res.y << std::endl; 
+    }
 
     return 0;
 }
