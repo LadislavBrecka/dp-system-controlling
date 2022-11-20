@@ -38,30 +38,21 @@ namespace DT
             return { P, I, V };
         }
 
-        // TODO: make pole placement algorithm for any PID regulators
-        // PIDRegCoefs PID(const DT::TransferFunction& tf, double beta, double gama, double delta)
-        // {
-        //     const Eigen::VectorXd A = tf.getDenominator();
-        //     const Eigen::VectorXd B = tf.getNominator();
-        //     const uint n_a = A.size() - 1;
+        // TODO: need proper testing - not tested yet!!!
+        PIDRegCoefs PID(const DT::TransferFunction& tf, double omega, double b, double k)
+        {
+            const Eigen::VectorXd A = tf.getDenominator();
+            const Eigen::VectorXd B = tf.getNominator();
 
-        //     assert(B.size() == 1);
-        //     assert(A.size() == 5);
+            assert(B.size() == 1);
+            assert(A.size() == 3);
+            assert(A[0] == 1.0);
 
-        //     int P = gama / B[0];
-        //     int I = delta / B[0];
-        //     int D = (beta - A[1]) / B[0];
-            
-        //     // if yes, make computations and return coeficients
-        //     if (true)
-        //     {
-        //         return { P, I, D };
-        //     }   
-        //     // if no, throw exception
-        //     else
-        //     {
-        //         throw std::domain_error("PIDRegulator coeficients cannot be found by this method!");
-        //     }
-        // } 
+            double P = (pow(omega, 2) + 2*b*omega*k - A[2]) / B[0];
+            double I = (pow(omega, 2) * k) / B[0];
+            double D = (2*b*omega + k - A[1]) / B[0];
+
+            return { P, I, D };
+        } 
     } 
 }
