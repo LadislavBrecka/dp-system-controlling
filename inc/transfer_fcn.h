@@ -26,6 +26,9 @@ namespace DT {
         ~TransferFunction();
         double step(double u);
         void print();   
+
+        inline uint getPolynomialOrder() const { return n_a; };
+        inline Eigen::VectorXd getNominator() const { return B; };
+        inline Eigen::VectorXd getDenominator() const { return A; };
     };
-    
 }
