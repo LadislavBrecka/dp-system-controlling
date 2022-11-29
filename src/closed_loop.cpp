@@ -63,8 +63,9 @@ namespace DT
     /*
     REGULATOR IMPLEMENTATIONS
     */
-    PIDRegulator::PIDRegulator(AproximationType aproxType, double P, double I, double D, double T, double N)
-    : P_gain(P), I_gain(I), D_gain(D)
+    PIDRegulator::PIDRegulator(AproximationType aproxType, double P, double I, double D, double T, double N,
+                               double uMin, double uMax, double Kaw)
+    : P_gain(P), I_gain(I), D_gain(D), u_min(uMin), u_max(uMax), k_aw(Kaw)
     {
         integrator = std::make_unique<Integrator>(aproxType, T);
         derivator = std::make_unique<Derivator>(aproxType, N, T);
@@ -80,17 +81,30 @@ namespace DT
             throw std::domain_error("You must first call init() method for regulator to work properly!");
         
         double p_y = P_gain * e;
-        double i_y = I_gain * integrator->produceOutput(e);
-        double d_y = D_gain * derivator->produceOutput(e);
-        return p_y + i_y + d_y;
+        double i_y = integrator->produceOutput(e * I_gain + prev_aw_gain);
+        double d_y = derivator->produceOutput(e * D_gain);
+
+        double u = p_y + i_y + d_y;
+
+        // anti-wind up algorithm
+        double u_before_saturation = u;
+        if (u > u_max)          u = u_max;
+        else if (u < u_min)     u = u_min;
+        double diff = u - u_before_saturation;
+        double aw_gain = diff * k_aw;
+        prev_aw_gain = aw_gain;  
+
+        return u;
     }
 
     /*
     PID SYSTEM IMPLEMENTATIONS
     */
-    ClosedLoopSystem_PID::ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aproxType, double P, double I, double D, double T, double N)
+    ClosedLoopSystem_PID::ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aproxType, 
+                                                double P, double I, double D, double T, double N,
+                                                double uMin, double uMax, double Kaw)
     {
-        pid_regulator = std::make_unique<DT::PIDRegulator>(aproxType, P, I, D, T, N);
+        pid_regulator = std::make_unique<DT::PIDRegulator>(aproxType, P, I, D, T, N, uMin, uMax, Kaw);
         system = tf;
     }
     
@@ -112,8 +126,10 @@ namespace DT
     /*
     PIV SYSTEM IMPLEMENTATIONS
     */
-    ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aproxType, double P, double I, double V, double T=0.0)
-    : P_gain(P), I_gain(I), V_gain(V)
+    ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aproxType, 
+                                                double P, double I, double V, double T,
+                                                double uMin, double uMax, double Kaw)
+    : P_gain(P), I_gain(I), V_gain(V), u_min(uMin), u_max(uMax), k_aw(Kaw)
     {
         output_integrator = std::make_unique<Integrator>(aproxType, T);
         i_reg_integrator = std::make_unique<Integrator>(aproxType, T);
@@ -127,16 +143,24 @@ namespace DT
     
     ClosedLoopStepResponse ClosedLoopSystem_PIV::step(double w)
     {
-        double e_1 = w - previous_iy;                       // position error
-        double u_1 = P_gain * e_1;                          // position correction signal
+        double e_1 = w - previous_iy;                                                   // position error
+        double u_1 = P_gain * e_1;                                                      // position correction signal
     
-        double e_2 = u_1 - previous_y;                                  // speed error
-        double u_2 = i_reg_integrator->produceOutput(e_2) * I_gain;     // speed correction signal
+        double e_2 = u_1 - previous_y;                                                  // speed error
+        double u_2 = i_reg_integrator->produceOutput(e_2 * I_gain + prev_aw_gain);      // speed correction signal
 
-        double u = u_2 - previous_y * V_gain;               // final correction signal
+        double u = u_2 - previous_y * V_gain;                                           // final correction signal
 
-        double y = system->step(u);                         // y  - speed
-        double iy = output_integrator->produceOutput(y);    // iy - position
+        // anti-wind up algorithm
+        double u_before_saturation = u;
+        if (u > u_max)          u = u_max;
+        else if (u < u_min)     u = u_min;
+        double diff = u - u_before_saturation;
+        double aw_gain = diff * k_aw;
+        prev_aw_gain = aw_gain;  
+
+        double y = system->step(u);                                                     // y  - speed
+        double iy = output_integrator->produceOutput(y);                                // iy - position
         previous_y = y;
         previous_iy = iy;
 
