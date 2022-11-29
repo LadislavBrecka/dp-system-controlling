@@ -21,10 +21,14 @@ namespace DT
         double V;
     };
 
+    // TODO: need to implement POLE-PLACEMENT for PSD type regulators 
     namespace PolePlacement
     {
-        PIVRegCoefs PIV(const DT::TransferFunction& tf, double omega, double b, double k)
+        PIVRegCoefs PIV(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
         {
+            if (aproxType == DT::PSD)
+                throw std::runtime_error( "PSD Aproximation type for pole-placement is currently not suported!");
+
             const Eigen::VectorXd A = tf.getDenominator();
             const Eigen::VectorXd B = tf.getNominator();
 
@@ -39,8 +43,11 @@ namespace DT
         }
 
         // TODO: need proper testing - not tested yet!!!
-        PIDRegCoefs PID(const DT::TransferFunction& tf, double omega, double b, double k)
+        PIDRegCoefs PID(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
         {
+            if (aproxType == DT::PSD)
+                throw std::runtime_error( "PSD Aproximation type for pole-placement is currently not suported!");
+
             const Eigen::VectorXd A = tf.getDenominator();
             const Eigen::VectorXd B = tf.getNominator();
 
