@@ -112,10 +112,10 @@ namespace DT
     /*
     PIV SYSTEM IMPLEMENTATIONS
     */
-    ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aproxType, double P, double I, double V, double T)
+    ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aproxType, double P, double I, double V, double T=0.0)
     : P_gain(P), I_gain(I), V_gain(V)
     {
-        position_integrator = std::make_unique<Integrator>(aproxType, T);
+        output_integrator = std::make_unique<Integrator>(aproxType, T);
         i_reg_integrator = std::make_unique<Integrator>(aproxType, T);
         system = tf;
     }
@@ -127,19 +127,19 @@ namespace DT
     
     ClosedLoopStepResponse ClosedLoopSystem_PIV::step(double w)
     {
-        double e_pos = w - previous_iy;
-        double u_pos = P_gain * e_pos;
+        double e_1 = w - previous_iy;                       // position error
+        double u_1 = P_gain * e_1;                          // position correction signal
     
-        double e_speed = u_pos - previous_y;
-        double u_speed = i_reg_integrator->produceOutput(e_speed) * I_gain;
+        double e_2 = u_1 - previous_y;                                  // speed error
+        double u_2 = i_reg_integrator->produceOutput(e_2) * I_gain;     // speed correction signal
 
-        double u = u_speed - previous_y * V_gain;
+        double u = u_2 - previous_y * V_gain;               // final correction signal
 
-        double speed = system->step(u);
-        double position = position_integrator->produceOutput(speed);
-        previous_y = speed;
-        previous_iy = position;
+        double y = system->step(u);                         // y  - speed
+        double iy = output_integrator->produceOutput(y);    // iy - position
+        previous_y = y;
+        previous_iy = iy;
 
-        return { e_pos, u, position };
+        return { e_1, u, iy };
     }
 }

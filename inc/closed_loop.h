@@ -123,7 +123,7 @@ namespace DT
     {
     private:
         double P_gain, I_gain, V_gain;
-        std::unique_ptr<DT::Integrator> position_integrator;
+        std::unique_ptr<DT::Integrator> output_integrator;
         std::unique_ptr<DT::Integrator> i_reg_integrator;
         DT::TransferFunction* system; 
         double previous_y = 0;
