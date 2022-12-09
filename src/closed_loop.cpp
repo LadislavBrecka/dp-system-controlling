@@ -1,6 +1,7 @@
 #include "../inc/closed_loop.h"
 #include "../inc/Eigen/Dense"
 #include <iostream>
+#include "../inc/Exceptions/not_supported_exception.h"
 
 namespace DT 
 {
@@ -12,6 +13,18 @@ namespace DT
    {
         switch(type)
         {
+            case FWD:
+            {
+                throw NotSupportedException("FWD Aproximation");
+                break;
+            }
+
+            case BWD:
+            {
+                throw NotSupportedException("BWD Aproximation");
+                break;
+            }
+
             case TPZ:
             {
                 Eigen::VectorXd i_nom {{ T, T }};
@@ -38,6 +51,18 @@ namespace DT
    {
         switch(type)
         {
+            case FWD:
+            {
+                throw NotSupportedException("FWD Aproximation");
+                break;
+            }
+
+            case BWD:
+            {
+                throw NotSupportedException("BWD Aproximation");
+                break;
+            }
+            
             case TPZ:
             {
                 Eigen::VectorXd d_nom {{ N, -N }};

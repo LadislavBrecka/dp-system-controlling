@@ -1,6 +1,9 @@
 #include "../inc/transfer_fcn.h"
+#include "../inc/Exceptions/not_supported_exception.h"
 #include <iostream>
 #include <cmath>
+
+std::string convert_to_uper(int index, std::string var);
 
 namespace DT {
 
@@ -54,17 +57,18 @@ namespace DT {
     }
     
     // TODO: not properly tested!!!
+    // TODO: not working with complex roots!!!
     void TransferFunction::d2c(double Ts, DT::TransferFunction& c_tf)
     {
         double A_sum = A.sum();
         double B_sum = B.sum();
-        double gain = B_sum/A_sum;
+        double gain = B_sum / A_sum;
 
         // fill companion matrix
         Eigen::MatrixXd companion_matrix = Eigen::MatrixXd::Zero(n_a-1, n_a-1);
-        for (uint i=0; i<n_a-1; i++)   // cols
+        for (uint i=0; i<n_a-1; i++)        // cols
         {
-            for (uint j=0; j<n_a-1; j++)   // rows
+            for (uint j=0; j<n_a-1; j++)    // rows
             {
                 if (i == n_a - 2)
                     companion_matrix(j, i) = -A[n_a - 1 - j];
@@ -73,12 +77,10 @@ namespace DT {
                     companion_matrix(j, i) = 1;
             }
         }
-        std::cout << companion_matrix << std::endl;
 
         // find eigenvalue of companion matrix -> found values are roots of polynom
         Eigen::EigenSolver<Eigen::MatrixXd> eigensolver(companion_matrix);
         Eigen::VectorXcd roots = eigensolver.eigenvalues();
-        std::cout << roots << std::endl;
 
         // Using Eigen unsupported module - example of alternative way of finding roots with Eigen
         // Eigen::PolynomialSolver<double, Eigen::Dynamic> solver;
@@ -86,46 +88,59 @@ namespace DT {
         // const Eigen::PolynomialSolver<double, Eigen::Dynamic>::RootsType &r = solver.roots();
         // std::cout << r << std::endl;
 
-        Eigen::VectorXd continuous_roots(n_a - 1);
         Eigen::VectorXd c_A = Eigen::VectorXd::Zero(n_a);
         Eigen::VectorXd c_B {{ gain }};
         double multiplier;
 
-        for (int i = n_a - 1; i > 0; i--)
+        for (uint i = n_a - 1; i > 0; i--)
         {
-            double temp = log(roots(i-1).real()) / Ts;
-            std::cout << temp << std::endl;
+            // complex natural logaritmus
+            double real_part= roots(i-1).real();
+            double imag_part = roots(i-1).imag(); 
+            double manginute = log(sqrt(pow(real_part, 2) + pow(imag_part, 2)));
+            double phase = std::atan2(imag_part,real_part);
+            std::complex<double> log_value(manginute, phase);
+
+            if (log_value.imag() != 0.0)
+                throw NotSupportedException("C2D transformation for continuous complex roots");
+
+            double continuous_root = log_value.real() / Ts;
             if (i == n_a - 1)
             {
-                multiplier = 1.0 / temp;
-                
+                multiplier = 1.0 / continuous_root;       
             }
 
-            c_A(i) = temp * multiplier;
-               
-            std::cout << i << std::endl;
+            // fill characteristic polynom of new continuous TF
+            c_A(i) = continuous_root * multiplier;               
         }
 
         c_A(0) = -multiplier;
 
-        std::cout << "Gain of TF: "<< gain << std::endl;
-        std::cout << "Roots of TF: " << continuous_roots * multiplier << std::endl;
-
         c_tf.setDenominator(c_A);
         c_tf.setNominator(c_B);
-        c_tf.print();
     }
     
-    void TransferFunction::print()
+    void TransferFunction::print(const std::string& var)
     {
+        
         // nominator printing
+        std::cout << std::endl << std::endl;
         for (uint i = 0; i < n_b; i++)
         {
             if (B[i] != 0.0)
             {
-                if (B[i] > 0.0) std::cout << " + "; else std::cout << " - ";
-                std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
-                std::cout << fabs(B[i]) << z_index;
+                if (B[i] > 0.0 && i != 0) 
+                    std::cout << " + "; 
+                else if (B[i] > 0.0 && i == 0 ) 
+                    std::cout << "";
+                else 
+                    std::cout << "-";   
+
+                std::string indexed_variable = convert_to_uper(n_b-1-i, var);
+                if (i == 0 && B[i] == 1)
+                    std::cout << indexed_variable;
+                else                
+                    std::cout << fabs(B[i]) << indexed_variable;
             }
         }
 
@@ -142,14 +157,23 @@ namespace DT {
         {
             if (A[i] != 0.0)
             {
-                if (A[i] > 0.0) std::cout << " + "; else std::cout << " - ";
-                std::string z_index = (i == 0 ? "" : "z-" + std::to_string(i));
-                std::cout << fabs(A[i]) << z_index;
+                if (A[i] > 0.0 && i != 0) 
+                    std::cout << " + "; 
+                else if (A[i] > 0.0)
+                    std::cout << "";
+                else 
+                    std::cout << " - ";
+
+                std::string indexed_variable = convert_to_uper(n_a-1-i, var);
+                if (i == 0 && A[i] == 1)
+                    std::cout << indexed_variable;
+                else                
+                    std::cout << fabs(A[i]) << indexed_variable;
             }
         }
 
         // new line at the end
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
     }
     
     void TransferFunction::setNominator(Eigen::VectorXd nominator)
@@ -180,4 +204,18 @@ namespace DT {
         vY = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_a));
     }
 
+}
+
+std::string convert_to_uper(int index, std::string var) 
+{
+    switch(abs(index))
+    {
+        case 0: return "";
+        case 1: return var;
+        case 2: return var + "^2";
+        case 3: return var + "^3";
+        case 4: return var + "^4";
+        case 5: return var + "^5";
+        default: return "";
+    }
 }

@@ -28,7 +28,7 @@ namespace DT {
         ~TransferFunction();
         double step(double u);
         void d2c(double Ts,  DT::TransferFunction& c_tf);
-        void print();   
+        void print(const std::string& var = "z");   
 
         inline uint getPolynomialOrder() const { return n_a; };
         inline Eigen::VectorXd getNominator() const { return B; };

@@ -4,6 +4,7 @@
 #include "./transfer_fcn.h"
 #include <iostream>
 #include <cassert>
+#include "../inc/Exceptions/not_supported_exception.h"
 
 namespace DT
 {
@@ -27,7 +28,7 @@ namespace DT
         PIVRegCoefs PIV(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
         {
             if (aproxType == DT::PSD)
-                throw std::runtime_error( "PSD Aproximation type for pole-placement is currently not suported!");
+                throw NotSupportedException( "PSD Aproximation type for pole-placement");
 
             const Eigen::VectorXd A = tf.getDenominator();
             const Eigen::VectorXd B = tf.getNominator();
@@ -46,7 +47,7 @@ namespace DT
         PIDRegCoefs PID(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
         {
             if (aproxType == DT::PSD)
-                throw std::runtime_error( "PSD Aproximation type for pole-placement is currently not suported!");
+                throw NotSupportedException("PSD Aproximation type for pole-placement");
 
             const Eigen::VectorXd A = tf.getDenominator();
             const Eigen::VectorXd B = tf.getNominator();

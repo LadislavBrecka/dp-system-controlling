@@ -10,7 +10,7 @@
 
 const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
 
-int main(int argc, char const *argv[])
+int main()
 {
     double T_step = 0.1;
 
@@ -21,10 +21,12 @@ int main(int argc, char const *argv[])
     Eigen::VectorXd A {{ 1, -0.9802 }};
     Eigen::VectorXd B {{ 0.0594 }};
     DT::TransferFunction discrete_dc_model(B, A);
+    discrete_dc_model.print();
 
     // convert discrete fcn to s-domain
     DT::TransferFunction continuous_dc_model;
     discrete_dc_model.d2c(T_step, continuous_dc_model);
+    continuous_dc_model.print("s");
 
     // make pole-placement with s-model
     auto PIV = DT::PolePlacement::PIV(continuous_dc_model, DT::TPZ, 2.0, 0.7, 1.0);  // omega = 2.0, b = 0.7, k = 1.0
