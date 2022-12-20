@@ -1,5 +1,6 @@
 #include "../inc/transfer_fcn.h"
 #include "../inc/Exceptions/not_supported_exception.h"
+#include "../inc/unsupported/Eigen/Polynomials"
 #include <iostream>
 #include <cmath>
 
@@ -88,10 +89,10 @@ namespace DT {
         // const Eigen::PolynomialSolver<double, Eigen::Dynamic>::RootsType &r = solver.roots();
         // std::cout << r << std::endl;
 
-        Eigen::VectorXd c_A = Eigen::VectorXd::Zero(n_a);
-        Eigen::VectorXd c_B {{ gain }};
-        double multiplier;
+        Eigen::VectorXcd c_poly(n_a);
+        Eigen::VectorXcd c_roots = Eigen::VectorXcd::Zero(roots.size());
 
+        // convert discrete roots to continuous roots
         for (uint i = n_a - 1; i > 0; i--)
         {
             // complex natural logaritmus
@@ -101,20 +102,21 @@ namespace DT {
             double phase = std::atan2(imag_part,real_part);
             std::complex<double> log_value(manginute, phase);
 
-            if (log_value.imag() != 0.0)
-                throw NotSupportedException("C2D transformation for continuous complex roots");
-
-            double continuous_root = log_value.real() / Ts;
-            if (i == n_a - 1)
-            {
-                multiplier = 1.0 / continuous_root;       
-            }
-
-            // fill characteristic polynom of new continuous TF
-            c_A(i) = continuous_root * multiplier;               
+            c_roots(i-1) = log_value.real() / Ts;              
         }
 
-        c_A(0) = -multiplier;
+        // make polynom from continuous roots
+        Eigen::roots_to_monicPolynomial(c_roots, c_poly);
+
+        // std::cout << "Discrete roots are: " << roots << std::endl;
+        // std::cout << "Continuos roots are: " << c_roots << std::endl;
+        // std::cout << "Continuos polynom is: " << c_poly << std::endl;
+
+        Eigen::VectorXd c_A = c_poly.real().reverse();
+        Eigen::VectorXd c_B {{ gain }};
+
+        double multiplier = 1.0 / c_A(n_a-1);
+        c_A = c_A * multiplier;
 
         c_tf.setDenominator(c_A);
         c_tf.setNominator(c_B);
