@@ -25,11 +25,14 @@ namespace DT{
             vector[idx] = value;           
         };
 
-        double at(uint index)
+        double at(uint index) //Toto nie je zrovna uplne efektivne - vela podmienok
         {
-            if (index > vector.size()-1) throw std::out_of_range ("Index is out of range!");
+           /* if (index > vector.size()-1) throw std::out_of_range ("Index is out of range!");
             int real_index = idx - index;
-            if (real_index < 0) real_index = vector.size() + real_index; 
+            if (real_index < 0) real_index = vector.size() + real_index; */
+            if (index > vector.size()-1) throw std::out_of_range ("Index is out of range!");
+            uint real_index =  (idx+(vector.size()-index))%vector.size(); // Treba overit
+            
             return vector[real_index];
         }
     };
