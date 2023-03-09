@@ -27,17 +27,15 @@ namespace DT
 
             case TPZ:
             {
-                Eigen::VectorXd i_nom {{ T, T }};
-                Eigen::VectorXd i_den {{ 2.0, -2.0 }};
-                tf = std::make_unique<DT::TransferFunction>(i_nom, i_den); 
+                setNominator(Eigen::VectorXd {{ T, T }} );
+                setDenominator(Eigen::VectorXd {{ 2.0, -2.0 }} );
                 break;
             }
 
             case PSD:
             {
-                Eigen::VectorXd i_nom {{ 1.0, 0.0 }};
-                Eigen::VectorXd i_den {{ 1.0, -1.0 }};
-                tf = std::make_unique<DT::TransferFunction>(i_nom, i_den);
+                setNominator(Eigen::VectorXd {{ 1.0, 0.0 }} );
+                setDenominator(Eigen::VectorXd {{ 1.0, -1.0 }} );
                 break;
             }
         }
@@ -65,17 +63,15 @@ namespace DT
             
             case TPZ:
             {
-                Eigen::VectorXd d_nom {{ N, -N }};
-                Eigen::VectorXd d_den {{ N*(T/2.0) + 1.0, N*(T/2.0) - 1.0 }};
-                tf = std::make_unique<DT::TransferFunction>(d_nom, d_den); 
+                setNominator(Eigen::VectorXd {{ N, -N }} );
+                setDenominator(Eigen::VectorXd {{ N*(T/2.0) + 1.0, N*(T/2.0) - 1.0 }} );
                 break;
             }
 
             case PSD:
-            {
-                Eigen::VectorXd d_den {{ 1.0, 0.0 }};
-                Eigen::VectorXd d_nom {{ 1.0, -1.0 }};
-                tf = std::make_unique<DT::TransferFunction>(d_nom, d_den);
+            {                
+                setNominator(Eigen::VectorXd {{ 1.0, -1.0 }} );
+                setDenominator(Eigen::VectorXd {{ 1.0, 0.0 }} );
                 break;
             }
         }
@@ -106,8 +102,8 @@ namespace DT
             throw std::domain_error("You must first call init() method for regulator to work properly!");
         
         double p_y = P_gain * e;
-        double i_y = integrator->produceOutput(e * I_gain + prev_aw_gain);
-        double d_y = derivator->produceOutput(e * D_gain);
+        double i_y = integrator->step(e * I_gain + prev_aw_gain);
+        double d_y = derivator->step(e * D_gain);
 
         double u = p_y + i_y + d_y;
 
@@ -168,13 +164,13 @@ namespace DT
     
     ClosedLoopStepResponse ClosedLoopSystem_PIV::step(double w)
     {
-        double e_1 = w - previous_iy;                                                   // position error
-        double u_1 = P_gain * e_1;                                                      // position correction signal
+        double e_1 = w - previous_iy;                                           // position error
+        double u_1 = P_gain * e_1;                                              // position correction signal
     
-        double e_2 = u_1 - previous_y;                                                  // speed error
-        double u_2 = i_reg_integrator->produceOutput(e_2 * I_gain + prev_aw_gain);      // speed correction signal
+        double e_2 = u_1 - previous_y;                                          // speed error
+        double u_2 = I_gain * (i_reg_integrator->step(e_2) + prev_aw_gain);     // speed correction signal
 
-        double u = u_2 - previous_y * V_gain;                                           // final correction signal
+        double u = u_2 - previous_y * V_gain;                                   // final correction signal
 
         // anti-wind up algorithm
         double u_before_saturation = u;
@@ -184,8 +180,8 @@ namespace DT
         double aw_gain = diff * k_aw;
         prev_aw_gain = aw_gain;  
 
-        double y = system->step(u);                                                     // y  - speed
-        double iy = output_integrator->produceOutput(y);                                // iy - position
+        double y = system->step(u);                                            // y  - speed
+        double iy = output_integrator->step(y);                                // iy - position
         previous_y = y;
         previous_iy = iy;
 

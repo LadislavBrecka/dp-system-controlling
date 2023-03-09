@@ -65,29 +65,21 @@ namespace DT
     };
 }
 
-// functionality declaration
+// blocks for regulators
 namespace DT
 {
-    class Integrator
+    class Integrator : public TransferFunction
     {
-    private:
-        std::unique_ptr<TransferFunction> tf;
     public:
         Integrator(AproximationType type, double T=0.0);
         ~Integrator();
-
-        inline double produceOutput(double in) { return tf->step(in); };
     };
 
-    class Derivator
+    class Derivator : public TransferFunction
     {
-    private:
-        std::unique_ptr<TransferFunction> tf;
     public:
         Derivator(AproximationType type, double T=0.0, double N=0.0);
         ~Derivator();
-
-        inline double produceOutput(double in) { return tf->step(in); };
     };
 
     class PIDRegulator 
@@ -107,7 +99,10 @@ namespace DT
 
         double produceOutput(double e);       
     };
+}
 
+// specifying closed loop systems
+namespace DT {
     class ClosedLoopSystem_PID
     {
     private:

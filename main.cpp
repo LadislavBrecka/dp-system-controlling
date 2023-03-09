@@ -28,13 +28,19 @@ int main()
     discrete_dc_model.d2c(T_step, continuous_dc_model);
     continuous_dc_model.print("s");
 
-    // make pole-placement with s-model
+    // // make pole-placement with s-model
     auto PIV = DT::PolePlacement::PIV(continuous_dc_model, DT::TPZ, 2.0, 0.7, 1.0);  // omega = 2.0, b = 0.7, k = 1.0
 
-    // make PIV closed loop system with anti-windup algorithm
-    DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step, -0.1, 0.1, 1.0);
+    // // make PIV closed loop system with anti-windup algorithm
+    DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step, -2.0, 2.0, 1.0);
 
     std::cout << "Found PIV params: P: " << PIV.P << ", I: " << PIV.I << ", V: " << PIV.V << std::endl;
+
+    // output to file for export to MATLAB
+    std::ofstream y_log("logs/y_cpp.txt");
+    std::ofstream u_log("logs/u_cpp.txt");
+    std::ofstream e_log("logs/e_cpp.txt");
+    y_log << "y_cpp = [\n"; u_log << "u_cpp = [\n"; e_log << "e_cpp = [\n";
 
     // P+IV regulator
     for (int i=0; i<499; i++)
@@ -42,8 +48,11 @@ int main()
         double w = in[i];
         // double y = discrete_dc_model.step(w);
         DT::ClosedLoopStepResponse res = cls_piv.step(w);
-        std::cout << res.y << std::endl; 
+        e_log << res.e << std::endl;
+        u_log << res.u << std::endl;
+        y_log << res.y << std::endl;
     }
+    y_log << "]"; u_log << "]"; e_log << "]";
 
     return 0;
 }
