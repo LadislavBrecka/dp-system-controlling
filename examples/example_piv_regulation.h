@@ -1,14 +1,16 @@
+#include <vector>
+#include <fstream>
+#include <iostream>
+
 #include "../inc/transfer_fcn.h"
 #include "../inc/closed_loop.h"
 #include "../inc/pole_placement.h"
 #include "../inc/eigen_formatter.h"
-#include <iostream>
-#include <fstream>
-#include <vector>
 
 namespace DT {
 
-    namespace Examples {
+    namespace Examples
+    {
 
         void example_piv_regulation() 
         {

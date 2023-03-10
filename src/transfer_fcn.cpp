@@ -1,8 +1,9 @@
+#include <cmath>
+#include <iostream>
+
 #include "../inc/transfer_fcn.h"
 #include "../inc/Exceptions/not_supported_exception.h"
-#include "../inc/unsupported/Eigen/Polynomials"
-#include <iostream>
-#include <cmath>
+#include "../inc/Eigen/unsupported/Polynomials"
 
 std::string convert_to_uper(int index, std::string var);
 
@@ -10,20 +11,20 @@ namespace DT {
 
     TransferFunction::TransferFunction()
     {
-        setNominator(Eigen::VectorXd::Ones(1));
-        setDenominator(Eigen::VectorXd::Ones(1));
+        set_numerator(Eigen::VectorXd::Ones(1));
+        set_denominator(Eigen::VectorXd::Ones(1));
     }
 
-    TransferFunction::TransferFunction(Eigen::VectorXd nominator, Eigen::VectorXd denominator)
+    TransferFunction::TransferFunction(Eigen::VectorXd num, Eigen::VectorXd den)
     {
-        setNominator(nominator);
-        setDenominator(denominator);
+        set_numerator(num);
+        set_denominator(den);
     }
     
-    TransferFunction::TransferFunction(std::vector<double> nominator, std::vector<double> denominator)
+    TransferFunction::TransferFunction(std::vector<double> num, std::vector<double> den)
     {
-        setNominator(nominator);
-        setDenominator(denominator);
+        set_numerator(num);
+        set_denominator(den);
     }
     
     TransferFunction::~TransferFunction()
@@ -115,8 +116,8 @@ namespace DT {
         //double multiplier = 1.0 / c_A(n_a-1);
         c_A = c_A /c_A(n_a-1); // jednoduchsie
 
-        c_tf.setDenominator(c_A);
-        c_tf.setNominator(c_B);
+        c_tf.set_denominator(c_A);
+        c_tf.set_numerator(c_B);
     }
     
     void TransferFunction::print(const std::string& var)
@@ -175,28 +176,28 @@ namespace DT {
         std::cout << std::endl << std::endl;
     }
     
-    void TransferFunction::setNominator(Eigen::VectorXd nominator)
+    void TransferFunction::set_numerator(Eigen::VectorXd numerator)
     {
-        n_b = nominator.size();
-        B = nominator;
+        n_b = numerator.size();
+        B = numerator;
         vU = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_b));
     }
     
-    void TransferFunction::setNominator(std::vector<double> nominator)
+    void TransferFunction::set_numerator(std::vector<double> numerator)
     {
-        n_b = nominator.size();
-        B = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(nominator.data(), n_b);
+        n_b = numerator.size();
+        B = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(numerator.data(), n_b);
         vU = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_b));
     }
     
-    void TransferFunction::setDenominator(Eigen::VectorXd denominator)
+    void TransferFunction::set_denominator(Eigen::VectorXd denominator)
     {
         n_a = denominator.size();
         A = denominator;
         vY = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_a));
     }
     
-    void TransferFunction::setDenominator(std::vector<double> denominator)
+    void TransferFunction::set_denominator(std::vector<double> denominator)
     {
         n_a = denominator.size();
         A = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(denominator.data(), n_a);

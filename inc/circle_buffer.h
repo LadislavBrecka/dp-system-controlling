@@ -1,11 +1,12 @@
 #pragma once
+
 #include "Eigen/Dense"
 
-namespace DT {
+namespace DT
+{
 
     class CircleBuffer
     {
-
     private:
         Eigen::VectorXd vector;
         uint idx;
@@ -30,6 +31,6 @@ namespace DT {
             uint real_index =  (idx+(vector.size()-index))%vector.size();
             
             return vector[real_index];
-        }
+        };
     };
 }

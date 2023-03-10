@@ -1,50 +1,8 @@
 #pragma once
 
-#include "./transfer_fcn.h"
 #include <memory>
 
-/*---------- Example of usage PIV system regulation in main.cpp: ------------
-
- const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
-
-int main(int argc, char const *argv[])
-{
-    double T_step = 0.1;
-
-    // input
-    Eigen::VectorXd in = Eigen::VectorXd::Ones(500);
-
-    // DC motor discrete fcn (discrete fcn is used in closed loop system and we can get it from continuose by 
-    // running MATLAB c2d function)
-    Eigen::VectorXd A {{ 1.0, -0.9802 }};
-    Eigen::VectorXd B {{ 0.0594 }};
-    DT::TransferFunction discrete_dc_model(B, A);
-
-    // Continuos fcn, used in pole-placement algorithm (pp is using continuos model, so we need continuos equivalent
-    // from above discrete)
-    Eigen::VectorXd cA {{ 5, 1 }};
-    Eigen::VectorXd cB {{ 3 }};
-    DT::TransferFunction continuous_dc_model(cB, cA);
-
-    // make pole-placement
-    auto PIV = DT::PolePlacement::PIV(continuous_dc_model, 2.0, 0.7, 1.0);  // omega = 2.0, b = 0.7, k = 1.0
-    std::cout << "Found PIV params: P: " << PIV.P << ", I: " << PIV.I << ", V: " << PIV.V << std::endl;
-
-    // make PIV closed loop system
-    DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step);
-
-    // P+IV regulator
-    for (int i=0; i<499; i++)
-    {
-        double w = in[i];
-        DT::ClosedLoopStepResponse res = cls_piv.step(w);
-        std::cout << res.y << std::endl; 
-    }
-
-    return 0;
-}
- 
-*/
+#include "./transfer_fcn.h"
 
 // structures and custom data types
 namespace DT
@@ -71,29 +29,27 @@ namespace DT
     class Integrator : public TransferFunction
     {
     public:
-        Integrator(AproximationType type, double T=0.0);
+        Integrator(AproximationType aprox_type, double T=0.0);
         ~Integrator();
     };
 
     class Derivator : public TransferFunction
     {
     public:
-        Derivator(AproximationType type, double T=0.0, double N=0.0);
+        Derivator(AproximationType aprox_type, double T=0.0, double N=0.0);
         ~Derivator();
     };
 
     class PIDRegulator 
     {
     private:
-        double P_gain;
-        double I_gain;
-        double D_gain;
+        double P_gain, I_gain, D_gain;
         double u_min, u_max, k_aw, prev_aw_gain = 0.0;
         std::unique_ptr<Integrator> integrator;
         std::unique_ptr<Derivator> derivator;
 
     public:
-        PIDRegulator(AproximationType aproxType, double P, double I, double D, double T=0.0, double N=0.0,
+        PIDRegulator(AproximationType aprox_type, double P, double I, double D, double T=0.0, double N=0.0,
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIDRegulator();
 
@@ -102,7 +58,9 @@ namespace DT
 }
 
 // specifying closed loop systems
-namespace DT {
+namespace DT 
+{
+
     class ClosedLoopSystem_PID
     {
     private:
@@ -111,7 +69,7 @@ namespace DT {
         double previous_y = 0.0;
 
     public:
-        ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aproxType, 
+        ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aprox_type, 
                              double P, double I, double D, double T=0.0, double N=0.0,
                              double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~ClosedLoopSystem_PID();
@@ -130,7 +88,7 @@ namespace DT {
         double previous_iy = 0.0;
 
     public:
-        ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aproxType, 
+        ClosedLoopSystem_PIV(DT::TransferFunction* tf, AproximationType aprox_type, 
                              double P, double I, double V, double T=0.0,
                              double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~ClosedLoopSystem_PIV();

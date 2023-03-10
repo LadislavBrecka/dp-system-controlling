@@ -1,10 +1,13 @@
-#include "../inc/identification.h"
-#include "../inc/eigen_formatter.h"
 #include <iostream>
 
-namespace DT {
+#include "../inc/identification.h"
+#include "../inc/eigen_formatter.h"
 
-    namespace Examples {
+namespace DT 
+{
+
+    namespace Examples
+    {
 
         void example_identification() 
         {
@@ -16,10 +19,10 @@ namespace DT {
             for (int i = 0; i < u.size(); i++)
             {
                 std::cout << "\n-------- New iteration " << i+1 << " ---------" << std::endl;
-                identificator.updateCoeficients(u[i], y[i]);
+                identificator.update_coeficients(u[i], y[i]);
             }
 
-            auto thetas = identificator.getThetas();
+            auto thetas = identificator.get_thetas();
 
             std::cout << std::endl << "----------------------------------------" << std::endl;
             std::cout << std::endl << "|          Found parameters:           |" << std::endl;

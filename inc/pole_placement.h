@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cassert>
+#include <iostream>
+
 #include "./Eigen/Dense"
 #include "./transfer_fcn.h"
-#include <iostream>
-#include <cassert>
 #include "../inc/Exceptions/not_supported_exception.h"
 
 namespace DT
@@ -25,13 +26,14 @@ namespace DT
     // TODO: need to implement POLE-PLACEMENT for PSD type regulators 
     namespace PolePlacement
     {
-        PIVRegCoefs PIV(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
+
+        PIVRegCoefs PIV(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
-            if (aproxType == DT::PSD)
+            if (aprox_type == DT::PSD)
                 throw NotSupportedException( "PSD Aproximation type for pole-placement");
 
-            const Eigen::VectorXd A = tf.getDenominator();
-            const Eigen::VectorXd B = tf.getNominator();
+            const Eigen::VectorXd A = tf.get_denominator();
+            const Eigen::VectorXd B = tf.get_numerator();
 
             // assert all conditions
             assert(A.size() == 2);
@@ -44,13 +46,13 @@ namespace DT
         }
 
         // TODO: need proper testing - not tested yet!!!
-        PIDRegCoefs PID(const DT::TransferFunction& tf, DT::AproximationType aproxType, double omega, double b, double k)
+        PIDRegCoefs PID(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
-            if (aproxType == DT::PSD)
+            if (aprox_type == DT::PSD)
                 throw NotSupportedException("PSD Aproximation type for pole-placement");
 
-            const Eigen::VectorXd A = tf.getDenominator();
-            const Eigen::VectorXd B = tf.getNominator();
+            const Eigen::VectorXd A = tf.get_denominator();
+            const Eigen::VectorXd B = tf.get_numerator();
 
             assert(B.size() == 1);
             assert(A.size() == 3);

@@ -1,11 +1,14 @@
+#include <vector>
+#include <iostream>
+
 #include "../inc/transfer_fcn.h"
 #include "../inc/eigen_formatter.h"
-#include <iostream>
-#include <vector>
 
-namespace DT {
+namespace DT 
+{
     
-    namespace Examples {
+    namespace Examples
+    {
 
         void example_transfer_function()
         {

@@ -1,12 +1,14 @@
 #pragma once
-#include <vector>
+
 #include <array>
+#include <vector>
 #include <memory>
 
 #include "./Eigen/Dense"
 #include "../inc/eigen_formatter.h"
 
-namespace DT {
+namespace DT 
+{
 
     // main class of identification -> we need instance of this class for identification
     class Identificator;  
@@ -22,7 +24,8 @@ namespace DT {
     enum IdentificationMethodType { LSM = 0 };
 }
 
-namespace DT {
+namespace DT 
+{
 
     class IdentificationMethod 
     {
@@ -38,7 +41,7 @@ namespace DT {
         virtual void update(Eigen::VectorXd h, double y) = 0;
 
         // encapsulation methods
-        inline Eigen::VectorXd getThetas() { return thetas; }
+        inline Eigen::VectorXd get_thetas() { return thetas; }
     };
 
     class Identificator 
@@ -53,20 +56,20 @@ namespace DT {
         std::unique_ptr<IdentificationMethod> method;
 
     public:
-        Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order);
+        Identificator(IdentificationMethodType method_type, uint num_order, uint den_order);
         ~Identificator();
 
         // method for updating coeficients of identification
         // we call this funcion in loop and in every call we provide the newest IO data from system
-        void updateCoeficients(double u, double y);
+        void update_coeficients(double u, double y);
 
         // encapsulation methods
-        inline Eigen::VectorXd getThetas() { return method->getThetas(); }
-        inline std::vector<Eigen::Vector4d> getMatrixH() { return H; }
+        inline Eigen::VectorXd get_thetas() { return method->get_thetas(); }
+        inline std::vector<Eigen::Vector4d> get_matrix_H() { return H; }
 
     private:
         // shifting vector h with new IO data
-        void shiftVector_h(double u, double y);
+        void shift_vector_h(double u, double y);
     };
 }
 

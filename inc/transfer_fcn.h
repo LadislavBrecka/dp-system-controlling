@@ -1,12 +1,13 @@
 #pragma once
-#include "./Eigen/Dense"
-// #include "./unsupported/Eigen/Polynomials"
+
 #include <vector>
 #include <memory>
 
+#include "./Eigen/Dense"
 #include "circle_buffer.h"
 
-namespace DT {
+namespace DT 
+{
 
     class TransferFunction;
 
@@ -14,29 +15,27 @@ namespace DT {
     {
     private:
         float ts;
-        Eigen::VectorXd B;
-        Eigen::VectorXd A;
-        uint n_a; uint n_b;
+        uint n_a, n_b;
+        Eigen::VectorXd B, A;
 
-        std::unique_ptr<DT::CircleBuffer> vU;
-        std::unique_ptr<DT::CircleBuffer> vY;
+        std::unique_ptr<DT::CircleBuffer> vU, vY;
 
     public:
         TransferFunction();
-        TransferFunction(Eigen::VectorXd nominator, Eigen::VectorXd denominator);
-        TransferFunction(std::vector<double> nominator, std::vector<double> denominator);
+        TransferFunction(Eigen::VectorXd num, Eigen::VectorXd den);
+        TransferFunction(std::vector<double> num, std::vector<double> den);
         ~TransferFunction();
         double step(double u);
         void d2c(double Ts,  DT::TransferFunction& c_tf);
         void print(const std::string& var = "z");   
 
-        inline uint getPolynomialOrder() const { return n_a; };
-        inline Eigen::VectorXd getNominator() const { return B; };
-        inline Eigen::VectorXd getDenominator() const { return A; };
+        inline uint get_polynomial_order() const { return n_a; };
+        inline Eigen::VectorXd get_numerator() const { return B; };
+        inline Eigen::VectorXd get_denominator() const { return A; };
 
-        void setNominator(Eigen::VectorXd nominator);
-        void setNominator(std::vector<double> nominator);
-        void setDenominator(Eigen::VectorXd denominator);
-        void setDenominator(std::vector<double> denominator);
+        void set_numerator(Eigen::VectorXd numerator);
+        void set_numerator(std::vector<double> numerator);
+        void set_denominator(Eigen::VectorXd denominator);
+        void set_denominator(std::vector<double> denominator);
     };
 }

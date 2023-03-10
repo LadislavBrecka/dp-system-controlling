@@ -1,10 +1,11 @@
-#include <iostream>
-#include <string>
 #include <cmath>
+#include <string>
+#include <iostream>
 
 #include "../inc/identification.h"
 
-namespace DT {
+namespace DT 
+{
 
     //  IDENTIFICATION METHOD BASE CLASS IMPLEMENTATIONS
     IdentificationMethod::IdentificationMethod(uint n_params)
@@ -18,11 +19,12 @@ namespace DT {
     }
 
     //  MAIN IDENTIFICATION CLASS IMPLEMENTATIONS
-    Identificator::Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order)
-    : n_a(denominator_order), n_b(nominator_order)
+    Identificator::Identificator(IdentificationMethodType method_type, uint num_order, uint den_order)
+    : n_a(den_order), n_b(num_order)
     {
         std::cout << "Initializing identification main class!" << std::endl;
-        switch (type) {
+        switch (method_type) 
+        {
             case LSM:
                 method = std::make_unique<LeastSquareMethod>(n_a + n_b);
                 break;
@@ -38,13 +40,13 @@ namespace DT {
     {
     }
 
-    void Identificator::updateCoeficients(double u, double y)
+    void Identificator::update_coeficients(double u, double y)
     {
         this->method->update(h, y);
-        shiftVector_h(u, y);
+        shift_vector_h(u, y);
     }
 
-    void Identificator::shiftVector_h(double u, double y)
+    void Identificator::shift_vector_h(double u, double y)
     {
         // save actual vector h to H matrix
         H.push_back(h);
