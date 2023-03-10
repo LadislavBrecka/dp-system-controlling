@@ -1,16 +1,12 @@
-#include "../inc/identification.h"
 #include <iostream>
 #include <string>
 #include <cmath>
 
+#include "../inc/identification.h"
+
 namespace DT {
 
-    const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
-
-    // -------------------------------------------------- //
-    //  IDENTIFICATION METHOD BASE CLASS IMPLEMENTATIONS  //
-    // -------------------------------------------------- //
-
+    //  IDENTIFICATION METHOD BASE CLASS IMPLEMENTATIONS
     IdentificationMethod::IdentificationMethod(uint n_params)
     {
         n_parameters = n_params;
@@ -21,10 +17,7 @@ namespace DT {
     {
     }
 
-    // ------------------------------------------- //
-    //  MAIN IDENTIFICATION CLASS IMPLEMENTATIONS  //
-    // ------------------------------------------- //
-
+    //  MAIN IDENTIFICATION CLASS IMPLEMENTATIONS
     Identificator::Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order)
     : n_a(denominator_order), n_b(nominator_order)
     {
@@ -65,11 +58,7 @@ namespace DT {
         h[n_b] = -y;
     }
 
-    // ---------------------------------- //
-    //   IDENTIFICATION METHODS CLASSES   //
-    // ---------------------------------- //
-
-    // LEAST SQUARE METHOD
+    //   IDENTIFICATION METHODS CLASSES
     LeastSquareMethod::LeastSquareMethod(uint n_params) : IdentificationMethod(n_params)
     {
         // P matrix initialization with 10^10

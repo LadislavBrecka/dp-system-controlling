@@ -1,8 +1,10 @@
 #pragma once
-#include "./Eigen/Dense"
 #include <vector>
 #include <array>
 #include <memory>
+
+#include "./Eigen/Dense"
+#include "../inc/eigen_formatter.h"
 
 /* 
 ---------- Example of usage in main.cpp: ------------
@@ -49,13 +51,12 @@ namespace DT {
 
     // enum just for method types distinguishing 
     enum IdentificationMethodType { LSM = 0 };
+}
 
-    // ----------------------------------- //
-    //  IDENTIFICATION METHOD BASE CLASS  //
-    // ----------------------------------- //
+namespace DT {
+
     class IdentificationMethod 
     {
-
     protected:
         uint n_parameters;
         Eigen::VectorXd thetas;
@@ -64,28 +65,23 @@ namespace DT {
         IdentificationMethod(uint n_params);
         ~IdentificationMethod();
 
-        // each child class (each specific method must implement own update methods)
+        // each child class (each specific method) must implement own update method
         virtual void update(Eigen::VectorXd h, double y) = 0;
 
         // encapsulation methods
         inline Eigen::VectorXd getThetas() { return thetas; }
     };
 
-    // --------------------------- //
-    //  MAIN IDENTIFICATION CLASS  //
-    // --------------------------- //
     class Identificator 
     {
-
     private:
+        uint n_a, n_b;
+        Eigen::VectorXd h;
+        std::vector<Eigen::Vector4d> H;
+
         // identification is done by identification method
         // we can choose, which method we want to use
         std::unique_ptr<IdentificationMethod> method;
-
-        uint n_a; uint n_b;
-
-        Eigen::VectorXd h;
-        std::vector<Eigen::Vector4d> H;
 
     public:
         Identificator(IdentificationMethodType type, uint nominator_order, uint denominator_order);
@@ -103,13 +99,11 @@ namespace DT {
         // shifting vector h with new IO data
         void shiftVector_h(double u, double y);
     };
+}
 
 
-    // ----------------------------------- //
-    //  IDENTIFICATION METHODS CLASSES     //
-    // ----------------------------------- // 
+namespace DT {
 
-    // LEAST SQUARE METHOD
     class LeastSquareMethod : public IdentificationMethod 
     {
 
