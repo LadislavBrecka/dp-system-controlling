@@ -97,7 +97,7 @@ namespace DT
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIDRegulator();
 
-        double produceOutput(double e);       
+        double step(double e);       
     };
 }
 

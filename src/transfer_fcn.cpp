@@ -58,7 +58,6 @@ namespace DT {
     }
     
     // TODO: not properly tested!!!
-    // TODO: not working with complex roots!!!
     void TransferFunction::d2c(double Ts, DT::TransferFunction& c_tf)
     {
         //double A_sum = A.sum();
@@ -78,10 +77,9 @@ namespace DT {
                     companion_matrix(j, i) = 1;
             }
         }
-*/
+        */
         
-        
-       for (uint i=0; i<n_a-1; i++)        // cols // Toto cele by sa teoreticky dalo napisat v jednom for cykle 
+       for (uint i=0; i<n_a-1; i++)         // Toto cele by sa teoreticky dalo napisat v jednom for cykle 
         {
              companion_matrix(i, n_a - 2) = -A[n_a - 1 - i];  //Overte to prosim
              if(i+1<n_a-1) companion_matrix(i+1, i) = 1;
@@ -89,13 +87,6 @@ namespace DT {
         // find eigenvalue of companion matrix -> found values are roots of polynom
         Eigen::EigenSolver<Eigen::MatrixXd> eigensolver(companion_matrix);
         Eigen::VectorXcd roots = eigensolver.eigenvalues();
-
-        // Using Eigen unsupported module - example of alternative way of finding roots with Eigen
-        // Eigen::PolynomialSolver<double, Eigen::Dynamic> solver;
-        // solver.compute(A.reverse());
-        // const Eigen::PolynomialSolver<double, Eigen::Dynamic>::RootsType &r = solver.roots();
-        // std::cout << r << std::endl;
-
         
         Eigen::VectorXcd c_roots = Eigen::VectorXcd::Zero(roots.size());
 
@@ -117,10 +108,6 @@ namespace DT {
         Eigen::VectorXcd c_poly(n_a);
         // make polynom from continuous roots
         Eigen::roots_to_monicPolynomial(c_roots, c_poly); // Ok toto bude spravna funkcia, do prace prosim uvedte co je monicky polynoml lebo je to zaujmave
-
-        // std::cout << "Discrete roots are: " << roots << std::endl;
-        // std::cout << "Continuos roots are: " << c_roots << std::endl;
-        // std::cout << "Continuos polynom is: " << c_poly << std::endl;
 
         Eigen::VectorXd c_A = c_poly.real().reverse();
         Eigen::VectorXd c_B {{ B.sum() / A.sum() }}; // snad to pojde skompilovat

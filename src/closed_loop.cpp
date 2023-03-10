@@ -96,7 +96,7 @@ namespace DT
     {
     }
     
-    double PIDRegulator::produceOutput(double e)
+    double PIDRegulator::step(double e)
     {
         if (integrator == nullptr || derivator == nullptr) 
             throw std::domain_error("You must first call init() method for regulator to work properly!");
@@ -137,7 +137,7 @@ namespace DT
     ClosedLoopStepResponse ClosedLoopSystem_PID::step(double w)
     {
         double e = w - previous_y;
-        double u = pid_regulator->produceOutput(e);     
+        double u = pid_regulator->step(e);     
 
         double y = system->step(u);
         previous_y = y;
