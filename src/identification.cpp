@@ -76,8 +76,8 @@ namespace DT
 
         std::cout << "............................" << std::endl << std::endl;
         std::cout << "Initialization of LSM!" << std::endl;
-        std::cout << "Matrix P:\n" << P.format(fmt) << std::endl;
-        std::cout << "Vector dT: " << d.transpose().format(fmt) << std::endl;
+        std::cout << "Matrix P:\n" << P.format(DT::Formatter::fmt) << std::endl;
+        std::cout << "Vector dT: " << d.transpose().format(DT::Formatter::fmt) << std::endl;
         std::cout << "Scalar e: " << e << std::endl;
         std::cout << "Scalar ro: " << ro << std::endl;
         std::cout << "Scalar Q: " << Q << std::endl;
@@ -92,7 +92,7 @@ namespace DT
     {
         auto hT = h.transpose();
 
-        std::cout << "Vector h: " << hT.format(fmt) << std::endl;
+        std::cout << "Vector h: " << hT.format(DT::Formatter::fmt) << std::endl;
         std::cout << "Output y: " << y << std::endl;
 
         e = y - hT * thetas;
@@ -105,8 +105,8 @@ namespace DT
 
         Q = Q + ro * (e*e);
         
-        std::cout << "New matrix P:\n" << P.format(fmt) << std::endl;
-        std::cout << "New thetas:\n" << thetas.transpose().format(fmt) << std::endl;
+        std::cout << "New matrix P:\n" << P.format(DT::Formatter::fmt) << std::endl;
+        std::cout << "New thetas:\n" << thetas.transpose().format(DT::Formatter::fmt) << std::endl;
         std:: cout << "Q: " << Q << std::endl;
         std:: cout << "e: " << e << std::endl;
     }

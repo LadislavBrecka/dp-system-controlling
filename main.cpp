@@ -5,9 +5,9 @@
 
 int main()
 {
-    // DT::Examples::example_identification();
+    DT::Examples::example_identification();
     // DT::Examples::example_transfer_function();
-    DT::Examples::example_piv_regulation();
+    // DT::Examples::example_piv_regulation();
 
     return 0;
 }

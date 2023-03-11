@@ -2,4 +2,10 @@
 
 #include "./Eigen/Dense"
 
-const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
+namespace DT
+{
+    namespace Formatter 
+    {
+        const Eigen::IOFormat fmt(4, 0, ", ", "\n", "[", "]");
+    }
+}

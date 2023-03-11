@@ -49,7 +49,7 @@ namespace DT
     private:
         uint n_a, n_b;
         Eigen::VectorXd h;
-        std::vector<Eigen::Vector4d> H;
+        std::vector<Eigen::VectorXd> H;
 
         // identification is done by identification method
         // we can choose, which method we want to use
@@ -65,7 +65,7 @@ namespace DT
 
         // encapsulation methods
         inline Eigen::VectorXd get_thetas() { return method->get_thetas(); }
-        inline std::vector<Eigen::Vector4d> get_matrix_H() { return H; }
+        inline std::vector<Eigen::VectorXd> get_matrix_H() { return H; }
 
     private:
         // shifting vector h with new IO data
