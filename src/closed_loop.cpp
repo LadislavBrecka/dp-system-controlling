@@ -168,7 +168,7 @@ namespace DT
         double u_1 = P_gain * e_1;                                              // position correction signal
 
         double e_2 = u_1 - previous_y;                                          // speed error
-        double u_2 = I_gain * (i_reg_integrator->step(e_2) + prev_aw_gain);     // speed correction signal
+        double u_2 = i_reg_integrator->step(e_2 * I_gain + prev_aw_gain);     // speed correction signal
 
         double u = u_2 - previous_y * V_gain;                                   // final correction signal
 

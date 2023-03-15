@@ -34,14 +34,14 @@ namespace DT {
             auto PIV = DT::PolePlacement::PIV(continuous_dc_model, DT::TPZ, 2.0, 0.7, 1.0);  // omega = 2.0, b = 0.7, k = 1.0
 
             // // make PIV closed loop system with anti-windup algorithm
-            DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step, -2.0, 2.0, 1.0);
+            DT::ClosedLoopSystem_PIV cls_piv(&discrete_dc_model, DT::TPZ, PIV.P, PIV.I, PIV.V, T_step, -0.7, 0.7, 1.0 / T_step);
 
             std::cout << "Found PIV params: P: " << PIV.P << ", I: " << PIV.I << ", V: " << PIV.V << std::endl;
 
             // output to file for export to MATLAB
-            std::ofstream y_log("logs/y_cpp.txt");
-            std::ofstream u_log("logs/u_cpp.txt");
-            std::ofstream e_log("logs/e_cpp.txt");
+            std::ofstream y_log("examples/logs/y_cpp.txt");
+            std::ofstream u_log("examples/logs/u_cpp.txt");
+            std::ofstream e_log("examples/logs/e_cpp.txt");
             y_log << "y_cpp = [\n"; u_log << "u_cpp = [\n"; e_log << "e_cpp = [\n";
 
             // P+IV regulator
@@ -56,6 +56,8 @@ namespace DT {
             }
 
             y_log << "]"; u_log << "]"; e_log << "]";
+
+            y_log.close(); u_log.close(); e_log.close();
         }
     }
 }
