@@ -61,60 +61,34 @@ namespace DT {
     // TODO: not properly tested!!!
     void TransferFunction::d2c(double Ts, DT::TransferFunction& c_tf)
     {
-        //double A_sum = A.sum();
-        // double B_sum = B.sum();
-        //double gain = B.sum() / A.sum();
-
         // fill companion matrix
         Eigen::MatrixXd companion_matrix = Eigen::MatrixXd::Zero(n_a-1, n_a-1);  
-       /* for (uint i=0; i<n_a-1; i++)        // cols  
+        for (uint i=0; i<n_a-1; i++)        
         {
-            for (uint j=0; j<n_a-1; j++)    // rows
-            {
-                if (i == n_a - 2)
-                    companion_matrix(j, i) = -A[n_a - 1 - j];
-
-                if (i+1 == j)
-                    companion_matrix(j, i) = 1;
-            }
-        }
-        */
-        
-       for (uint i=0; i<n_a-1; i++)         // Toto cele by sa teoreticky dalo napisat v jednom for cykle 
-        {
-             companion_matrix(i, n_a - 2) = -A[n_a - 1 - i];  //Overte to prosim
+             companion_matrix(i, n_a - 2) = -A[n_a - 1 - i];  
              if(i+1<n_a-1) companion_matrix(i+1, i) = 1;
         }
         // find eigenvalue of companion matrix -> found values are roots of polynom
         Eigen::EigenSolver<Eigen::MatrixXd> eigensolver(companion_matrix);
         Eigen::VectorXcd roots = eigensolver.eigenvalues();
         
-        Eigen::VectorXcd c_roots = Eigen::VectorXcd::Zero(roots.size());
-
         // convert discrete roots to continuous roots
+        Eigen::VectorXcd c_roots = Eigen::VectorXcd::Zero(roots.size());
         for (uint i = n_a - 1; i > 0; i--)
         {
-            // complex natural logaritmus
-           // double real_part= roots(i-1).real();
-           // double imag_part = roots(i-1).imag(); 
-           // double manginute = log(sqrt(pow(real_part, 2) + pow(imag_part, 2)));
-           // double phase = std::atan2(imag_part,real_part);
-          //  std::complex<double> log_value(manginute, phase);
-              std::complex<double> log_value(log(std::abs(roots(i-1))), std::arg(roots(i-1)));  // takto to bude jednoduchsie pozrite si dokumentaciu abs a arg
-             
-            // c_roots(i-1) = log_value.real() / Ts;  nie .real()    
-            c_roots(i-1) = log_value / Ts; //delime aj real aj imag zlozku skontrolujte ako funguje operator delenia
+            std::complex<double> log_value(log(std::abs(roots(i-1))), std::arg(roots(i-1))); 
+            c_roots(i-1) = log_value / Ts;
         }
 
-        Eigen::VectorXcd c_poly(n_a);
         // make polynom from continuous roots
-        Eigen::roots_to_monicPolynomial(c_roots, c_poly); // Ok toto bude spravna funkcia, do prace prosim uvedte co je monicky polynoml lebo je to zaujmave
+        Eigen::VectorXcd c_poly(n_a);
+        Eigen::roots_to_monicPolynomial(c_roots, c_poly);
 
         Eigen::VectorXd c_A = c_poly.real().reverse();
-        Eigen::VectorXd c_B {{ B.sum() / A.sum() }}; // snad to pojde skompilovat
+        Eigen::VectorXd c_B {{ B.sum() / A.sum() }};
 
-        //double multiplier = 1.0 / c_A(n_a-1);
-        c_A = c_A /c_A(n_a-1); // jednoduchsie
+        // set a_0 as 1
+        c_A = c_A /c_A(n_a-1);  
 
         c_tf.set_denominator(c_A);
         c_tf.set_numerator(c_B);
@@ -122,7 +96,6 @@ namespace DT {
     
     void TransferFunction::print(const std::string& var)
     {
-        
         // nominator printing
         std::cout << std::endl << std::endl;
         for (uint i = 0; i < n_b; i++)
