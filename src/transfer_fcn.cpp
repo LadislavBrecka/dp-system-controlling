@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "../inc/transfer_fcn.h"
-#include "../inc/Exceptions/not_supported_exception.h"
 #include "../inc/Eigen/unsupported/Polynomials"
 
 std::string convert_to_uper(int index, std::string var);
@@ -58,7 +57,6 @@ namespace DT {
         return y;
     }
     
-    // TODO: not properly tested!!!
     void TransferFunction::d2c(double Ts, DT::TransferFunction& c_tf)
     {
         // fill companion matrix

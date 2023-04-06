@@ -6,6 +6,7 @@
 
 #include "./Eigen/Dense"
 #include "../inc/eigen_formatter.h"
+#include "./common_types.h"
 
 namespace DT 
 {
@@ -19,14 +20,10 @@ namespace DT
 
     // child classes, which are implementing specific algorithm of identification
     class LeastSquareMethod;       
-
-    // enum just for method types distinguishing 
-    enum IdentificationMethodType { LSM = 0 };
 }
 
 namespace DT 
 {
-
     class IdentificationMethod 
     {
     protected:
@@ -49,14 +46,13 @@ namespace DT
     private:
         uint n_a, n_b;
         Eigen::VectorXd h;
-        std::vector<Eigen::VectorXd> H;
 
         // identification is done by identification method
         // we can choose, which method we want to use
-        std::unique_ptr<IdentificationMethod> method;
+        std::unique_ptr<DT::IdentificationMethod> method;
 
     public:
-        Identificator(IdentificationMethodType method_type, uint num_order, uint den_order);
+        Identificator(DT::IdentificationMethodType method_type, uint num_order, uint den_order);
         ~Identificator();
 
         // method for updating coeficients of identification
@@ -65,7 +61,6 @@ namespace DT
 
         // encapsulation methods
         inline Eigen::VectorXd get_thetas() { return method->get_thetas(); }
-        inline std::vector<Eigen::VectorXd> get_matrix_H() { return H; }
 
     private:
         // shifting vector h with new IO data

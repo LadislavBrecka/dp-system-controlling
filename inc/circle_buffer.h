@@ -27,9 +27,8 @@ namespace DT
 
         double at(uint index)
         {
-            if (index > vector.size()-1) throw std::out_of_range ("Index is out of range!");
+            if (index > (uint)vector.size()-1) return 0;
             uint real_index =  (idx+(vector.size()-index))%vector.size();
-            
             return vector[real_index];
         };
     };

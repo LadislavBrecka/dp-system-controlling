@@ -5,7 +5,7 @@
 
 #include "./Eigen/Dense"
 #include "./transfer_fcn.h"
-#include "../inc/Exceptions/not_supported_exception.h"
+#include "./common_types.h"
 
 namespace DT
 {
@@ -29,7 +29,10 @@ namespace DT
         PIVRegCoefs PIV_0z_1p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
             if (aprox_type == DT::PSD)
-                throw NotSupportedException( "PSD Aproximation type for pole-placement");
+            {
+                std::cout << "Cannot proceed with pole placement for PSD regulator type" << std::endl;
+                return { 0, 0, 0};
+            }
 
             const Eigen::VectorXd A = tf.get_denominator();
             const Eigen::VectorXd B = tf.get_numerator();
@@ -49,7 +52,10 @@ namespace DT
         PIDRegCoefs PID_0z_2p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
             if (aprox_type == DT::PSD)
-                throw NotSupportedException("PSD Aproximation type for pole-placement");
+            {
+                std::cout << "Cannot proceed with pole placement for PSD regulator type" << std::endl;
+                return { 0, 0, 0};
+            }
 
             const Eigen::VectorXd A = tf.get_denominator();
             const Eigen::VectorXd B = tf.get_numerator();
