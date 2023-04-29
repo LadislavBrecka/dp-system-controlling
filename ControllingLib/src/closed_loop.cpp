@@ -57,12 +57,12 @@ namespace DT
     /*
     PID REGULATOR IMPLEMENTATIONS
     */
-    PIDRegulator::PIDRegulator(DT::AproximationType aproxType, double P, double I, double D, double T, double N,
+    PIDRegulator::PIDRegulator(DT::AproximationType aprox_type, double P, double I, double D, double T, double N,
                                double uMin, double uMax, double Kaw)
         : P_gain(P), I_gain(I), D_gain(D), u_min(uMin), u_max(uMax), k_aw(Kaw)
     {
-        integrator = std::make_unique<DT::Integrator>(aproxType, T);
-        derivator = std::make_unique<DT::Derivator>(aproxType, N, T);
+        integrator = std::make_unique<DT::Integrator>(aprox_type, T);
+        derivator = std::make_unique<DT::Derivator>(aprox_type, N, T);
     }
 
     PIDRegulator::~PIDRegulator()
@@ -95,11 +95,11 @@ namespace DT
      /*
     PIV REGULATOR IMPLEMENTATIONS
     */
-    PIVRegulator::PIVRegulator(DT::AproximationType aproxType, double P, double I, double V, double T,
+    PIVRegulator::PIVRegulator(DT::AproximationType aprox_type, double P, double I, double V, double T,
                                double uMin, double uMax, double Kaw)
         : P_gain(P), I_gain(I), V_gain(V), u_min(uMin), u_max(uMax), k_aw(Kaw)
     {
-        i_reg_integrator = std::make_unique<DT::Integrator>(aproxType, T);
+        i_reg_integrator = std::make_unique<DT::Integrator>(aprox_type, T);
     }
 
     PIVRegulator::~PIVRegulator()
