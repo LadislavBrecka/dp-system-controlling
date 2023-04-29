@@ -4,7 +4,8 @@
 #include <memory>
 
 #include "./Eigen/Dense"
-#include "circle_buffer.h"
+#include "./Eigen/unsupported/Polynomials"
+#include "./circle_buffer.h"
 
 namespace DT 
 {
@@ -26,7 +27,11 @@ namespace DT
         ~TransferFunction();
         double step(double u);
         void d2c(double Ts,  DT::TransferFunction& c_tf);
+
+#ifdef __x86_64__
+        // NOT IMPLEMENTED IN STM32 PROJECT, IT'S JUST FOR DEBUGGING AND DEVELOPMENT
         void print(const std::string& var = "z");   
+#endif
 
         inline Eigen::VectorXd get_numerator() const { return B; };
         inline Eigen::VectorXd get_denominator() const { return A; };

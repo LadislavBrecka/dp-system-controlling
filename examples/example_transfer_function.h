@@ -1,8 +1,8 @@
 #include <vector>
 #include <iostream>
 
-#include "../inc/transfer_fcn.h"
-#include "../inc/eigen_formatter.h"
+#include "../ControllingLib/inc/transfer_fcn.h"
+#include "../ControllingLib/inc/eigen_formatter.h"
 
 namespace DT 
 {

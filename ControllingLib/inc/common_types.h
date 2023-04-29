@@ -25,4 +25,18 @@ namespace DT
         double u;
         double e;        
     };
+
+        struct PIDRegCoefs
+    {
+        double P;
+        double I;
+        double D;
+    };
+
+    struct PIVRegCoefs
+    {
+        double P;
+        double I;
+        double V;
+    };
 }

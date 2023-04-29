@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Eigen/Dense"
+#include "./Eigen/Dense"
 
 namespace DT
 {
-
     class CircleBuffer
     {
     private:
@@ -27,7 +26,14 @@ namespace DT
 
         double at(uint index)
         {
-            if (index > (uint)vector.size()-1) return 0;
+            if (index > (uint)vector.size()-1) 
+            {
+#ifdef __x86_64__
+                throw std::out_of_range ("Index is out of range!");
+#else
+                return MAXFLOAT;
+#endif
+            }
             uint real_index =  (idx+(vector.size()-index))%vector.size();
             return vector[real_index];
         };

@@ -1,10 +1,9 @@
-#include <cmath>
-#include <iostream>
-
 #include "../inc/transfer_fcn.h"
-#include "../inc/Eigen/unsupported/Polynomials"
 
-std::string convert_to_uper(int index, std::string var);
+#ifdef __x86_64__
+    #include <iostream>
+    std::string convert_to_uper(int index, std::string var);
+#endif
 
 namespace DT {
 
@@ -50,7 +49,7 @@ namespace DT {
 
         double y = 0.0;
         if (A[0] != 0.0)
-            y = (input_part - output_part)/A[0];
+            y = (input_part - output_part) / A[0];
           
         // shift vector y so it containts the newest output sample
         vY->add(y);
@@ -92,6 +91,8 @@ namespace DT {
         c_tf.set_numerator(c_B);
     }
     
+#ifdef __x86_64__
+    // NOT IMPLEMENTED IN STM32 PROJECT, IT'S JUST FOR DEBUGGING AND DEVELOPMENT
     void TransferFunction::print(const std::string& var)
     {
         // nominator printing
@@ -146,7 +147,8 @@ namespace DT {
         // new line at the end
         std::cout << std::endl << std::endl;
     }
-    
+#endif
+
     void TransferFunction::set_numerator(Eigen::VectorXd numerator)
     {
         n_b = numerator.size();
@@ -177,16 +179,19 @@ namespace DT {
 
 }
 
-std::string convert_to_uper(int index, std::string var) 
-{
-    switch(abs(index))
+#ifdef __x86_64__
+    // NOT IMPLEMENTED IN STM32 PROJECT, IT'S JUST FOR DEBUGGING AND DEVELOPMENT
+    std::string convert_to_uper(int index, std::string var) 
     {
-        case 0: return "";
-        case 1: return var;
-        case 2: return var + "^2";
-        case 3: return var + "^3";
-        case 4: return var + "^4";
-        case 5: return var + "^5";
-        default: return "";
+        switch(abs(index))
+        {
+            case 0: return "";
+            case 1: return var;
+            case 2: return var + "^2";
+            case 3: return var + "^3";
+            case 4: return var + "^4";
+            case 5: return var + "^5";
+            default: return "";
+        }
     }
-}
+#endif

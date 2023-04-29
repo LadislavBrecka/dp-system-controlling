@@ -2,8 +2,9 @@
 
 #include <memory>
 
-#include "./transfer_fcn.h"
+#include "./Eigen/Dense"
 #include "./common_types.h"
+#include "./transfer_fcn.h"
 
 namespace DT
 {
@@ -38,7 +39,7 @@ namespace DT
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIDRegulator();
 
-        DT::RegulatorResponse step(double w, double previous_y);      
+        DT::RegulatorResponse step(double w, double prev_y);      
     };
 
     class PIVRegulator
@@ -53,7 +54,7 @@ namespace DT
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIVRegulator();
 
-        DT::RegulatorResponse step(double w, double previous_y, double previous_iy);
+        DT::RegulatorResponse step(double w, double prev_y, double prev_iy);
     };
 }
 
@@ -65,7 +66,7 @@ namespace DT
     private:
         std::unique_ptr<DT::PIDRegulator> pid_regulator;
         DT::TransferFunction* system; 
-        double previous_y = 0.0;
+        double prev_y = 0.0;
 
     public:
         ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aprox_type, 
@@ -81,8 +82,8 @@ namespace DT
         std::unique_ptr<DT::Integrator> output_integrator;
         std::unique_ptr<DT::PIVRegulator> piv_regulator;
         DT::TransferFunction* system; 
-        double previous_y = 0.0;
-        double previous_iy = 0.0;
+        double prev_y = 0.0;
+        double prev_iy = 0.0;
 
     public:
         ClosedLoopSystem_PIV(DT::TransferFunction* tf, DT::AproximationType aprox_type, 

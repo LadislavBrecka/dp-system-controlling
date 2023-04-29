@@ -1,6 +1,6 @@
-#include "../inc/closed_loop.h"
-#include "../inc/transfer_fcn.h"
-#include "../inc/pole_placement.h"
+#include "../ControllingLib/inc/closed_loop.h"
+#include "../ControllingLib/inc/transfer_fcn.h"
+#include "../ControllingLib/inc/pole_placement.h"
 
 namespace DT
 {
