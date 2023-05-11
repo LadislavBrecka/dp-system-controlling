@@ -11,14 +11,14 @@ namespace DT
     class Integrator : public DT::TransferFunction
     {
     public:
-        Integrator(DT::AproximationType aprox_type, double T=0.0);
+        Integrator(DT::AproximationType aprox_type, double T);
         ~Integrator();
     };
 
     class Derivator : public DT::TransferFunction
     {
     public:
-        Derivator(DT::AproximationType aprox_type, double T=0.0, double N=0.0);
+        Derivator(DT::AproximationType aprox_type, double T, double N);
         ~Derivator();
     };
 }
@@ -35,7 +35,7 @@ namespace DT
         std::unique_ptr<DT::Derivator> derivator;
 
     public:
-        PIDRegulator(DT::AproximationType aprox_type, double P, double I, double D, double T=0.0, double N=0.0,
+        PIDRegulator(DT::AproximationType aprox_type, double P, double I, double D, double T, double N,
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIDRegulator();
 
@@ -50,7 +50,7 @@ namespace DT
         std::unique_ptr<DT::Integrator> i_reg_integrator;
 
     public:
-        PIVRegulator(DT::AproximationType aprox_type, double P, double I, double V, double T=0.0,
+        PIVRegulator(DT::AproximationType aprox_type, double P, double I, double V, double T,
                      double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~PIVRegulator();
 
@@ -70,7 +70,7 @@ namespace DT
 
     public:
         ClosedLoopSystem_PID(DT::TransferFunction* tf, AproximationType aprox_type, 
-                             double P, double I, double D, double T=0.0, double N=0.0,
+                             double P, double I, double D, double T, double N,
                              double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~ClosedLoopSystem_PID();
         DT::ClosedLoopStepResponse step(double w);
@@ -87,7 +87,7 @@ namespace DT
 
     public:
         ClosedLoopSystem_PIV(DT::TransferFunction* tf, DT::AproximationType aprox_type, 
-                             double P, double I, double V, double T=0.0,
+                             double P, double I, double V, double T,
                              double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
         ~ClosedLoopSystem_PIV();
         DT::ClosedLoopStepResponse step(double w);
